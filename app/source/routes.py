@@ -17,11 +17,11 @@ router = APIRouter()
 
 def create_time_series():
     time_series = []
-    y_value = 1000000
+    y_value = 1000
 
     for month in range(48):
         date = (datetime.datetime(2019, 1, 1) + relativedelta(months=+month)).strftime('%Y-%m-%d')
-        jump = random.choice([random.uniform(1, 2), random.uniform(100, 999900)]) * random.choice([2, 1,1,55])
+        jump = random.choice([random.uniform(1, 2), random.uniform(4, 50)]) * random.choice([2, 1,1,55])
         y_value += jump
         time_series.append({"ds": date, "y": int(y_value)})
 
