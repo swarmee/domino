@@ -4,3 +4,5 @@ python-json-logger>=2.0.4
 prometheus_client
 prometheus_fastapi_instrumentator
 pandas
+plotly
+prophet

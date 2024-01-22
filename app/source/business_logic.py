@@ -1,5 +1,4 @@
 from  time import sleep
-from log_setup import logger
 
 async def process_request(loop_count):
     logger.info('Processing the request...')
@@ -11,5 +10,5 @@ async def process_request(loop_count):
     # Access data using column names
         if index < loop_count:
             pass
-    logger.info('Completed request.')
+
     return {"status" : "The Application has Completed Successfully"}
