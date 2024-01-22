@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from typing import Optional, Union
 from models import UserAgentEnum
 from prometheus_client import generate_latest
-from forecasting import create_time_series, perform_forecasting, graph_forecast
+from forecasting import create_time_series, perform_forecasting, graph_forecast, graph_forecast_test
 from middleware import logger
 from datetime import datetime
 
@@ -85,6 +85,32 @@ async def return_chart(request: Request,
     if download:
         response.headers["Content-Disposition"] =  f"attachment; filename={reporting_entity_id}-chart.html"
     return response
+
+
+
+@router.get("/test/forecast/chart",
+            tags=["Create"],
+            response_class=HTMLResponse
+            )
+async def return_chart(
+                       reporting_entity_id: int = Query(description="filter by reporting entity id",
+                                                        gt=999,
+                                                        lt=999999,
+                                                        example=1000),
+                       correlation_id: Optional[str] = Header(None),
+                       accept: Optional[str] = Header("application/json",
+                                                      description="Media type(s) that is/are acceptable for the response."),
+                       user_agent: Optional[Union[UserAgentEnum, str]] = Header(UserAgentEnum.curl,
+                                                                                description="Information about the user agent originating the request."),
+                       ):
+    df = create_time_series(reporting_entity_id)
+    forecast = perform_forecasting(df)
+    plotly_chart = graph_forecast_test(forecast, reporting_entity_id)
+    # Convert the Plotly chart to HTML
+    plotly_html = plotly_chart.to_html(full_html=False)
+    return plotly_html
+
+
 
 # Define the metrics endpoint so it appears in the swagger page
 @router.get("/metrics",
