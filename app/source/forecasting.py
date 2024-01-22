@@ -42,11 +42,15 @@ def perform_forecasting(df):
                 daily_seasonality=False,
                 changepoint_prior_scale=0.10,
                 interval_width=0.95).fit(df)
-    future = m.make_future_dataframe(periods=0, freq='M')
+    future = m.make_future_dataframe(periods=0, freq='ME')
     forecast = m.predict(future)
-    # Join forecast and df dataframes together
-    forecast = pd.concat([forecast, df], axis=1)
-
+    
+    # Convert 'ds' column to datetime
+    forecast['ds'] = pd.to_datetime(forecast['ds'])
+    
+    # Join forecast and df dataframes together on 'ds' column
+    forecast = pd.concat([forecast, df.drop(['ds'], axis=1)], axis=1)
+    #forecast.reset_index(inplace=True)
     return forecast
 
 
@@ -100,7 +104,6 @@ def graph_forecast(forecast):
     # Identify points outside the expected range
     forecast['outlier'] = (forecast['y'] < forecast['yhat_lower']) | (
         forecast['y'] > forecast['yhat_upper'])
-
     # Create a scatter plot for the forecast
     fig = go.Figure()
 
@@ -190,6 +193,7 @@ def graph_forecast(forecast):
 
     # Remove the legend
     fig.update_layout(showlegend=False)
+
 
     return fig
 

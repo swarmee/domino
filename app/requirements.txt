@@ -6,3 +6,4 @@ prometheus_fastapi_instrumentator
 pandas
 plotly
 prophet
+jinja2

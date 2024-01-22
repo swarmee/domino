@@ -7,11 +7,15 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 logHandler = logging.StreamHandler()
-formatter = jsonlogger.JsonFormatter('%(datetime)s %(levelName)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%SZ')
+formatter = jsonlogger.JsonFormatter('%(asctime)s %(levelname)s %(message)s', datefmt='%Y-%m-%dT%H:%M:%SZ')
 formatter.converter = time.gmtime  # Use UTC time
 logHandler.setFormatter(formatter)
 logging.basicConfig(level=logging.INFO, handlers=[logHandler])
 logger = logging.getLogger(__name__)
+
+# Set the log level of pystan to CRITICAL
+pystan_logger = logging.getLogger('pystan')
+pystan_logger.setLevel(logging.CRITICAL)
 
 
 class JSONLogMiddleware(BaseHTTPMiddleware):
