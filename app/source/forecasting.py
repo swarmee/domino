@@ -384,6 +384,7 @@ def graph_forecast_test(forecast, reporting_entity_id):
     figFinal.add_trace(fig4.data[0], row=2, col=3)
 
 # Dummy table
+
     fig5 = go.Figure(data=[go.Table(
         header=dict(values=['A', 'B', 'C'],
                     fill_color='grey',

@@ -1,6 +1,6 @@
 # routes.py
 from fastapi import APIRouter, Header, Request, Query, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import Optional, Union
 from models import UserAgentEnum
 from prometheus_client import generate_latest
@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("/summary/data/raw",
             tags=["Extract"])
 async def read_root(request: Request,
-                    reporting_entity_id: int = Query(description="filter by reporting entity id",
+                    reporting_entity_id: Optional[int] = Query(description="filter by reporting entity id",
                                                      gt=999,
                                                      lt=999999,
                                                      example=1000),
@@ -87,13 +87,16 @@ async def return_chart(request: Request,
     return response
 
 
+@router.get("/")
+def root():
+    return RedirectResponse(url="/test/forecast/chart")
 
 @router.get("/test/forecast/chart",
             tags=["Create"],
             response_class=HTMLResponse
             )
 async def return_chart(
-                       reporting_entity_id: int = Query(description="filter by reporting entity id",
+                       reporting_entity_id: Optional[int] = Query(None, description="filter by reporting entity id",
                                                         gt=999,
                                                         lt=999999,
                                                         example=1000),
@@ -103,6 +106,8 @@ async def return_chart(
                        user_agent: Optional[Union[UserAgentEnum, str]] = Header(UserAgentEnum.curl,
                                                                                 description="Information about the user agent originating the request."),
                        ):
+    if reporting_entity_id is None:
+        reporting_entity_id = 1000
     df = create_time_series(reporting_entity_id)
     forecast = perform_forecasting(df)
     plotly_chart = graph_forecast_test(forecast, reporting_entity_id)
@@ -116,6 +121,19 @@ async def return_chart(
 @router.get("/metrics",
             include_in_schema=True,
             operation_id="metrics_get",
-            tags=["Prometheus Metrics"])
+            tags=["Infrastructure"])
 async def metrics():
     return generate_latest().decode("utf-8")
+
+
+# Liveness probe endpoint
+@router.get("/healthz", tags=["Infrastructure"])
+async def healthz():
+    return {"status": "ok"}
+
+# Readiness probe endpoint
+@router.get("/readyz", tags=["Infrastructure"])
+async def readyz():
+    # Add logic to check if the service is ready to handle traffic
+
+    return {"status": "ok"}

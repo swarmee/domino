@@ -17,8 +17,8 @@ app = FastAPI(title="Domino",
                       "description": "Extract Summary",
                   },
                   {
-                      "name": "Prometheus Metrics",
-                      "description": "Prometheus metrics endpoint",
+                      "name": "Infrastructure",
+                      "description": "Prometheus metrics and Kubernetes Health Probe endpoints",
                   },
               ])
 

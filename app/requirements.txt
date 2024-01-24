@@ -7,3 +7,4 @@ pandas
 plotly
 prophet
 jinja2
+rich
